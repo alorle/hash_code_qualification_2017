@@ -2,12 +2,14 @@
 
 var fs = require('fs');
 
-var kittens = './in/kittens.in';
-var zoo = './in/me_at_the_zoo.in';
-var trending = './in/trending_today.in';
-var spreading = './in/videos_worth_spreading.in';
+var kittens = 'kittens';
+var zoo = 'me_at_the_zoo';
+var trending = 'trending_today';
+var spreading = 'videos_worth_spreading';
 
-fs.readFile(zoo, 'ASCII', function (err,data) {
+var selected = spreading;
+
+fs.readFile('./in/' + selected + '.in', 'ASCII', function (err,data) {
     if (err) {
         return console.log(err);
     }
@@ -17,10 +19,10 @@ fs.readFile(zoo, 'ASCII', function (err,data) {
 
     var [videosNumber, endpointsNumber, reqDescriptions, cachesNumber, cacheSize] = lines[currentline++].split(' ').map((item) => Number(item));
 
-    console.log('Número de vídeos:', videosNumber);
-    console.log('Número de endpoints:', endpoints);
-    console.log('Número de request descriptions:', reqDescriptions);
-    console.log(cachesNumber + ' caches de ' + cacheSize + 'MB cada una');
+    //console.log('Número de vídeos:', videosNumber);
+    //console.log('Número de endpoints:', endpoints);
+    //console.log('Número de request descriptions:', reqDescriptions);
+    //console.log(cachesNumber + ' caches de ' + cacheSize + 'MB cada una');
 
     var videos = lines[currentline++].split(' ').map((item) => Number(item));
 
@@ -39,7 +41,7 @@ fs.readFile(zoo, 'ASCII', function (err,data) {
         }
         endpoints.push(endpoint);
     }
-    console.log('Endpoints:', endpoints);
+    //console.log('Endpoints:', endpoints);
 
     var endpointRequests = [];
     for (var i=0; i<reqDescriptions; i++) {
@@ -51,7 +53,7 @@ fs.readFile(zoo, 'ASCII', function (err,data) {
         }
         endpointRequests.push(request);
     }
-    console.log('Requests:', endpointRequests);
+    //console.log('Requests:', endpointRequests);
 
     // Fin de la lectura de datos
 
@@ -65,7 +67,7 @@ fs.readFile(zoo, 'ASCII', function (err,data) {
         }
         cachesArray.push(cache);
     }
-    console.log(cachesArray);
+    //console.log(cachesArray);
 
     // Rellenando las cachés en orden hasta que no quepa nada
     for (var i=0; i<reqDescriptions; i++) {
@@ -84,13 +86,13 @@ fs.readFile(zoo, 'ASCII', function (err,data) {
             }
         }
     }
-    console.log(cachesArray);
+    //console.log(cachesArray);
 
     var usedCaches = cachesArray.filter((cache) => cache.freeSpace < cacheSize);
     var outLines = [usedCaches.length.toString()];
     var outLines = outLines.concat(usedCaches.map((cache) => cache.id + ' ' + cache.videosList.join(' ')));
     var outText = outLines.join('\n');
 
-    fs.writeFile('./out/kittens.out', outText);
+    fs.writeFile('./out/' + selected + '.out', outText);
 
 });
