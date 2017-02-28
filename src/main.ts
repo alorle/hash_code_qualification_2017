@@ -68,6 +68,24 @@ datasets.forEach((dataset) => {
     })
   }
 
+  let out = alg_1(videosCount, endpointsCount, requestsCount, cachesCount, cacheSize, videos, endpoints, requests)
+
+  // Write out file
+  fs.writeFile(OUT_DIR + out.name + '-' + dataset + OUT_EXT, out.content.join('\n'));
+  console.log('Result for', dataset)
+})
+
+function alg_1(videosCount, endpointsCount, requestsCount, cachesCount, cacheSize, videos, endpoints, requests) {
+  // Init cache servers array
+  var caches = []
+  for (var c = 0; c < cachesCount; c++) {
+    caches.push({
+      id: c,
+      freeSpace: cacheSize,
+      videoList: []
+    })
+  }
+
   // Sort request by num and video size
   requests.sort((a, b) => {
     return b.num / videos[b.videoId] - a.num / videos[a.videoId]
@@ -78,16 +96,6 @@ datasets.forEach((dataset) => {
   endpoints.sort((a, b) => {
     return b.csConnectionsCount - a.csConnectionsCount
   })
-
-  // Init cache servers array
-  var caches = []
-  for (var c = 0; c < cachesCount; c++) {
-    caches.push({
-      id: c,
-      freeSpace: cacheSize,
-      videoList: []
-    })
-  }
 
   // For each endpoint, fill cache server with most requested videos
   endpoints.forEach((endpoint) => {
@@ -118,11 +126,9 @@ datasets.forEach((dataset) => {
     })
   })
 
-  let usedCaches = caches.filter((cache) => cache.videoList.length > 0);
-  let out = [usedCaches.length.toString()];
-  out = out.concat(usedCaches.map((cache) => cache.id + ' ' + cache.videoList.join(' ')));
-
-  // Write out file
-  fs.writeFile(OUT_DIR + dataset + OUT_EXT, out.join('\n'));
-  console.log('Result for', dataset)
-})
+  let usedCaches = caches.filter((cache) => cache.videoList.length > 0)
+  return {
+    name: 'alg_1',
+    content: [usedCaches.length.toString()].concat(usedCaches.map((cache) => cache.id + ' ' + cache.videoList.join(' ')))
+  }
+}
